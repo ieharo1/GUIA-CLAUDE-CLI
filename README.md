@@ -1,227 +1,115 @@
-# Claude CLI Complete Guide 🚀
+﻿# Guía Profesional de Claude CLI
+[![Docker Ready](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![Node.js 20](https://img.shields.io/badge/Node.js-20-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Idioma: Español](https://img.shields.io/badge/Idioma-Espa%C3%B1ol-blue)](#)
+[![Status: Production Ready](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)](#)
 
-Guía técnica profesional para instalar y utilizar Claude CLI desde cero.
+Guía técnica para usar Claude CLI en local y en Docker, pensada para que el repositorio aporte valor real a un perfil técnico (Dev, DevOps y automatización).
 
-Este repositorio está enfocado en desarrolladores, arquitectos y profesionales que desean integrar Claude en flujos de trabajo locales y automatizados.
+## Objetivos
 
----
+- Ejecutar Claude CLI en minutos.
+- Estandarizar el entorno con Docker.
+- Permitir prompts interactivos y automatización por scripts.
+- Evitar fugas de secretos (API key fuera del código).
 
-## 📌 ¿Qué es Claude CLI?
+## Stack
 
-Claude CLI es la interfaz de línea de comandos oficial para interactuar con Claude, el modelo de lenguaje desarrollado por Anthropic.
+- Claude CLI (`@anthropic-ai/claude-cli`)
+- Node.js 20
+- Docker / Docker Compose
 
-Claude es un modelo avanzado diseñado para:
+## Estructura
 
-- Generación de texto
-- Análisis técnico
-- Escritura de código
-- Automatización
-- Procesamiento de documentos
-- Integraciones en pipelines DevOps
+```text
+.
+├── Dockerfile
+├── docker-compose.yml
+├── .env.example
+├── entrypoint.sh
+└── README.md
+```
 
-Sitio oficial:
-https://www.anthropic.com
+## Requisitos
 
-Documentación:
-https://docs.anthropic.com
+- Docker Desktop o Docker Engine + Compose
+- API key de Anthropic
 
----
+## 1) Configurar entorno
 
-## 🎯 ¿Para qué sirve?
+Copia el archivo de ejemplo y carga tu clave:
 
-- Consultas técnicas rápidas desde terminal
-- Generación de código
-- Automatización en scripts
-- Integración en CI/CD
-- Análisis de archivos
-- Refactorización asistida
-- Documentación automática
+```bash
+cp .env.example .env
+```
 
----
+Edita `.env`:
 
-## 🏗 Arquitectura de Funcionamiento
+```env
+ANTHROPIC_API_KEY=tu_api_key_real
+```
 
-Terminal
-↓
-Claude CLI
-↓
-API de Anthropic
-↓
-Modelo Claude
+## 2) Construir imagen
 
+```bash
+docker compose build
+```
 
-La CLI actúa como cliente que se autentica mediante API Key.
+## 3) Uso rápido
 
----
+Mostrar ayuda:
 
-## 💻 Requisitos
+```bash
+docker compose run --rm claude --help
+```
 
-- Node.js 18+
-- npm o yarn
-- Cuenta en Anthropic
-- API Key válida
+Consulta directa:
 
----
+```bash
+docker compose run --rm claude "Explica CQRS en 5 puntos"
+```
 
-## 🛠 Instalación
+Prompt interactivo:
 
-### 1️⃣ Instalar Node.js
+```bash
+docker compose run --rm claude
+```
 
-Descargar desde:
-https://nodejs.org
+## 4) Analizar archivos del host
 
-Verificar:
-
-node -v
-npm -v
-
-
----
-
-### 2️⃣ Instalar Claude CLI
-
-npm install -g @anthropic-ai/claude-cli
-
-
-Verificar:
-
-claude --help
-
-
----
-
-## 🔐 Configuración de API Key
-
-1. Ingresar a Anthropic Console
-2. Generar una API Key
-3. Configurar variable de entorno
-
-### Windows (PowerShell)
-
-setx ANTHROPIC_API_KEY "tu_api_key"
-
-
-### Linux / Mac
-
-export ANTHROPIC_API_KEY="tu_api_key"
-
-
-Verificar:
-
-echo $ANTHROPIC_API_KEY
-
-
----
-
-## ▶️ Uso Básico
+El compose monta `./workspace` dentro del contenedor en `/workspace`.
 
 Ejemplo:
 
-claude "Explica qué es una arquitectura basada en eventos"
+```bash
+mkdir -p workspace
+cp app.py workspace/
+docker compose run --rm claude "Analiza /workspace/app.py y propone mejoras"
+```
 
+## 5) Uso en automatización
 
----
+```bash
+docker compose run --rm claude "Genera release notes para estos cambios"
+```
 
-## 🌎 Cómo poner Claude CLI en Español
+Puedes integrarlo en CI con secretos del pipeline (`ANTHROPIC_API_KEY`).
 
-Claude responde en el idioma del prompt.
+## Seguridad
 
-### Opción 1: Especificar idioma en cada prompt
+- No subas `.env` al repositorio.
+- Rota la API key periódicamente.
+- Usa una key por entorno (dev/staging/prod).
+- Revisa logs antes de compartirlos.
 
-claude "Responde en español: Explica qué es una arquitectura hexagonal"
+## Solución de problemas
 
+- `Missing ANTHROPIC_API_KEY`: revisa `.env`.
+- Error de red/API: valida conectividad y cuota en Anthropic.
+- Permisos con archivos montados: verifica rutas en `./workspace`.
 
----
+## Licencia
 
-### Opción 2: Crear alias permanente en Español
+MIT
 
-Linux / Mac:
-
-alias claude-es='claude "Responde siempre en español de forma técnica y clara:"'
-
-
-Luego:
-
-claude-es "Explica qué es CQRS"
-
-
----
-
-### Opción 3: Script Wrapper Profesional
-
-Crear archivo `claude-es.sh`:
-
-#!/bin/bash
-claude "Responde en español técnico profesional: $1"
-
-
-Dar permisos:
-
-chmod +x claude-es.sh
-
-
----
-
-## ⚙ Configuración Avanzada
-
-- Definir modelo específico
-- Ajustar temperatura
-- Limitar tokens
-- Integrar con scripts bash
-- Usar redirección de archivos
-
-Ejemplo con archivo:
-
-claude "Analiza el siguiente código:" < app.py
-
-
----
-
-## 🔁 Automatización
-
-Ejemplo en bash:
-
-for file in *.py; do
-claude "Documenta este archivo:" < "$file"
-done
-
-
----
-
-## 🛡 Buenas Prácticas
-
-- No subir API Key al repositorio
-- Usar .env
-- Rotar credenciales periódicamente
-- Limitar permisos de la API
-
----
-
-## 🚀 Casos de Uso Profesionales
-
-- Generación de documentación
-- Revisión de código automática
-- Asistente DevOps
-- Auditoría básica de seguridad
-- Generación de tests unitarios
-
----
-
-## 📄 Licencia
-
-MIT — contribuciones bienvenidas 🚀
-
----
-
-## 👨‍💻 Desarrollado por Isaac Esteban Haro Torres
-
-**Ingeniero en Sistemas · Full Stack · Automatización · Data**
-
-- 📧 Email: zackharo1@gmail.com
-- 📱 WhatsApp: 098805517
-- 💻 GitHub: https://github.com/ieharo1
-- 🌐 Portafolio: https://ieharo1.github.io/portafolio-isaac.haro/
-
----
-
-© 2026 Isaac Esteban Haro Torres - Todos los derechos reservados.
